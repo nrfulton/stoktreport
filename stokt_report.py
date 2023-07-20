@@ -263,31 +263,17 @@ if __name__ == "__main__":
             route_similarity[other_route["id"]] = distance
             route["route_similarity"] = sorted(route_similarity.keys(), key=lambda x: route_similarity[x])
 
-    # make sirectory all_routes.
-    try:
-        os.mkdir("all_routes")
-    except FileExistsError:
-        pass
-
-    for route in tqdm.tqdm(routes):
-        print(route["name"])
-        safe_name = route["name"].replace("/", "-")
-        # check if file exists.
-        try:
-            open(f"all_routes/{safe_name}.jpg", "r")
-            continue
-        except FileNotFoundError:
-            draw_polygons("wall.jpg", route["normalizedHolds"], route["name"], f"all_routes/{safe_name}.jpg")
-
     # for each route, print the name of the route and the name of the most similar route.
+    # hacky gross slow
     messages = []
     already_processed = []
     for route in routes:
         if route["id"] in already_processed:
             continue
         most_similar_id = route["route_similarity"][0]
-        already_processed.append(most_similar_id)
         most_similar = routeid2route(routes, most_similar_id)
+        if most_similar["route_similarity"][0] == route["id"]:
+            already_processed.append(most_similar_id)
         messages.append([
             route_similarity_metric(route, most_similar),
             f"{route['name']} ({route['crowdGrade']['hueco']}) is most hold-similar to {most_similar['name']} ({most_similar['crowdGrade']['hueco']}) with hold-inclusion distance {route_similarity_metric(route, most_similar)}"
@@ -303,3 +289,24 @@ if __name__ == "__main__":
     with open("report.html", "w") as f:
         f.write(original_contents)
 
+
+    input("Generate pictures of all routes? If not, ctrl-c now.")
+    # hacky gross not safe.
+    try:
+        os.mkdir("all_routes")
+    except FileExistsError:
+        pass
+    for route in tqdm.tqdm(routes):
+        print(route["name"])
+        safe_name = route["name"].replace("/", "-").replace("$", "-")
+        # check if file exists.
+        try:
+            open(f"all_routes/{safe_name}.jpg", "r")
+            continue
+        except FileNotFoundError:
+            try:
+                draw_polygons("wall.jpg", route["normalizedHolds"], route["name"], f"all_routes/{safe_name}.jpg")
+            except Exception:
+                draw_polygons("wall.jpg", route["normalizedHolds"], route["name"], f"all_routes/{route['id']}.jpg")
+        except Exception:
+            draw_polygons("wall.jpg", route["normalizedHolds"], route["name"], f"all_routes/{route['id']}.jpg")
