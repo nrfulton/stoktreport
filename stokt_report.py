@@ -189,6 +189,9 @@ if __name__ == "__main__":
     arg_parser.add_argument("--skip_download", action="store_true", default=False)
     args = arg_parser.parse_args()
 
+    with open("report.html", "r") as report_fh:
+        assert "Similarity" not in report_fh.read(), "clear out route similarity line in report.html before proceeding."
+
     if not args.skip_download:
         download(args.cookie, args.auth, args.faceid)
     normalize()
@@ -290,7 +293,13 @@ if __name__ == "__main__":
             f"{route['name']} ({route['crowdGrade']['hueco']}) is most hold-similar to {most_similar['name']} ({most_similar['crowdGrade']['hueco']}) with hold-inclusion distance {route_similarity_metric(route, most_similar)}"
         ])
     messages = sorted(messages, key=lambda x: x[0])
-    for message in messages:
-        print(message[1])
 
+    original_contents = open("report.html", "r").read()
+    original_contents += "<h2>Route Similarity</h2><ul>"
+    for message in messages:
+        original_contents += f"<li>{message[1]}</li>"
+    original_contents += "</ul></body></html>"
+
+    with open("report.html", "w") as f:
+        f.write(original_contents)
 
