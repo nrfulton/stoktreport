@@ -20,7 +20,8 @@ Before running the script, ensure you have the following prerequisites installed
 1. Clone the repository:
 
    ```shell
-   git clone https://github.com/nrfulton/stoktreport.git```
+   git clone https://github.com/nrfulton/stoktreport.git
+   ```
 
 2. Install the required Python packages:
 
@@ -40,3 +41,6 @@ Before running the script, ensure you have the following prerequisites installed
 
 Your report will be output to `report.html`. Be sure to delete the route
 similarity line before re-running the report.
+
+You can optionally skip the download step by padding `--skip_download` to the
+script. This can only be done after running the script for the first time.
