@@ -127,9 +127,6 @@ def type2color(hold_type):
 
 
 def draw_polygons(background_image_path, holds, title="", save_loc=None):
-    import matplotlib.pyplot as plt
-    import matplotlib.patches as patches
-
     # Load the background image
     dpi = 100
     image = plt.imread(background_image_path)
@@ -165,6 +162,7 @@ def draw_polygons(background_image_path, holds, title="", save_loc=None):
         plt.show()
     else:
         plt.savefig(save_loc, bbox_inches='tight')
+    plt.close()
 
 
 # endregion
